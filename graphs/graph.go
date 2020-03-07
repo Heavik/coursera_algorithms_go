@@ -9,6 +9,7 @@ import (
 
 type graphNode struct {
 	label   string
+	value   int
 	adjList []int
 }
 
@@ -21,7 +22,7 @@ type graph struct {
 func NewGraph(adj [][]int) graph {
 	gr := graph{vertices: make(map[int]graphNode)}
 	for _, nodes := range adj {
-		node := graphNode{label: strconv.Itoa(nodes[0])}
+		node := graphNode{label: strconv.Itoa(nodes[0]), value: nodes[0]}
 		for i := 1; i < len(nodes); i++ {
 			node.adjList = append(node.adjList, nodes[i])
 		}
@@ -73,6 +74,37 @@ func (g graph) Dfs(start int) []int {
 	result := []int{}
 
 	result = dfs(g, start, visited, result)
+	return result
+}
+
+func dfsTopo(g graph, node int, visited map[int]bool, result []int) []int {
+	visited[node] = true
+
+	for _, v := range g.vertices[node].adjList {
+		if !visited[v] {
+			result = dfsTopo(g, v, visited, result)
+		}
+	}
+	result = append(result, node)
+	return result
+}
+
+func (g graph) TopoSort() []int {
+	visited := make(map[int]bool)
+	result := []int{}
+
+	for _, v := range g.vertices {
+		if !visited[v.value] {
+			result = dfsTopo(g, v.value, visited, result)
+		}
+	}
+
+	rLen := len(result)
+	for i, j := 0, rLen-1; i < rLen/2; i++ {
+		result[i], result[j] = result[j], result[i]
+		j--
+	}
+
 	return result
 }
 
