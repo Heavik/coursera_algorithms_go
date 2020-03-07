@@ -4,7 +4,7 @@ import "testing"
 
 func TestStackReturnsValuesInLifo(t *testing.T) {
 	values := []int{1, 2, 3, 4, 5}
-	stack := Stack()
+	stack := NewStack()
 	for _, v := range values {
 		stack.Push(v)
 	}
@@ -20,7 +20,7 @@ func TestStackReturnsValuesInLifo(t *testing.T) {
 }
 
 func TestEmptyStackReturnsErrorOnPop(t *testing.T) {
-	stack := Stack()
+	stack := NewStack()
 	_, err := stack.Pop()
 	if err == nil {
 		t.Error("Pop() shuold return an error if stack is empty")
@@ -28,7 +28,7 @@ func TestEmptyStackReturnsErrorOnPop(t *testing.T) {
 }
 
 func TestStackIsEmptyReturnsTrue(t *testing.T) {
-	stack := Stack()
+	stack := NewStack()
 	stack.Push(42)
 	stack.Pop()
 
@@ -38,7 +38,7 @@ func TestStackIsEmptyReturnsTrue(t *testing.T) {
 }
 
 func TestStackSeqPushPop(t *testing.T) {
-	stack := Stack()
+	stack := NewStack()
 	stack.Push(42)
 	stack.Push(34)
 	stack.Pop()

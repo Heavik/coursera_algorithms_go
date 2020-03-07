@@ -7,8 +7,15 @@ type stack struct {
 	values []int
 }
 
-// Stack creates a new empty stack
-func Stack() *stack {
+// Stack interface
+type Stack interface {
+	IsEmpty() bool
+	Push(item int)
+	Pop() (int, error)
+}
+
+// NewStack creates a new empty stack
+func NewStack() Stack {
 	return &stack{top: -1}
 }
 

@@ -32,7 +32,7 @@ func NewGraph(adj [][]int) graph {
 }
 
 func (g graph) Bfs(start int) ([]int, error) {
-	q := datastructs.Queue(g.vertexNum)
+	q := datastructs.NewQueue(g.vertexNum)
 	q.Enqueue(start)
 	visited := map[int]bool{
 		start: true,

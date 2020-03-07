@@ -8,18 +8,25 @@ type queue struct {
 	values []int
 }
 
+// Queue interface
+type Queue interface {
+	IsEmpty() bool
+	Enqueue(value int)
+	Dequeue() (int, error)
+}
+
 // EmptyQueue creates new empty queue
-func EmptyQueue() *queue {
+func EmptyQueue() Queue {
 	return &queue{}
 }
 
-// Queue creates empty queue with given starting capacity
-func Queue(capacity int) *queue {
+// NewQueue creates empty queue with given starting capacity
+func NewQueue(capacity int) Queue {
 	return &queue{values: make([]int, capacity)}
 }
 
 func (q *queue) IsEmpty() bool {
-	return q.head == q.tail //(*q).head == (*q).tail
+	return q.head == q.tail
 }
 
 func (q *queue) Enqueue(value int) {
