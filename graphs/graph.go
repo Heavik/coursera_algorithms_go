@@ -18,8 +18,16 @@ type graph struct {
 	vertices  map[int]graphNode
 }
 
+// Graph interface
+type Graph interface {
+	Bfs(start int) ([]int, error)
+	Dfs(start int) []int
+	TopoSort() []int
+	PrintGraph()
+}
+
 // NewGraph creates new graph from adj list
-func NewGraph(adj [][]int) graph {
+func NewGraph(adj [][]int) Graph {
 	gr := graph{vertices: make(map[int]graphNode)}
 	for _, nodes := range adj {
 		node := graphNode{label: strconv.Itoa(nodes[0]), value: nodes[0]}
@@ -29,10 +37,10 @@ func NewGraph(adj [][]int) graph {
 		gr.vertices[nodes[0]] = node
 		gr.vertexNum++
 	}
-	return gr
+	return &gr
 }
 
-func (g graph) Bfs(start int) ([]int, error) {
+func (g *graph) Bfs(start int) ([]int, error) {
 	q := datastructs.NewQueue(g.vertexNum)
 	q.Enqueue(start)
 	visited := map[int]bool{
@@ -57,7 +65,7 @@ func (g graph) Bfs(start int) ([]int, error) {
 	return result, nil
 }
 
-func dfs(g graph, node int, visited map[int]bool, result []int) []int {
+func dfs(g *graph, node int, visited map[int]bool, result []int) []int {
 	visited[node] = true
 	result = append(result, node)
 
@@ -69,7 +77,7 @@ func dfs(g graph, node int, visited map[int]bool, result []int) []int {
 	return result
 }
 
-func (g graph) Dfs(start int) []int {
+func (g *graph) Dfs(start int) []int {
 	visited := make(map[int]bool)
 	result := []int{}
 
@@ -77,7 +85,7 @@ func (g graph) Dfs(start int) []int {
 	return result
 }
 
-func dfsTopo(g graph, node int, visited map[int]bool, result []int) []int {
+func dfsTopo(g *graph, node int, visited map[int]bool, result []int) []int {
 	visited[node] = true
 
 	for _, v := range g.vertices[node].adjList {
@@ -89,7 +97,7 @@ func dfsTopo(g graph, node int, visited map[int]bool, result []int) []int {
 	return result
 }
 
-func (g graph) TopoSort() []int {
+func (g *graph) TopoSort() []int {
 	visited := make(map[int]bool)
 	result := []int{}
 
@@ -108,7 +116,7 @@ func (g graph) TopoSort() []int {
 	return result
 }
 
-func (g graph) PrintGraph() {
+func (g *graph) PrintGraph() {
 	for _, node := range g.vertices {
 		nodes := []string{}
 		for _, n := range node.adjList {
