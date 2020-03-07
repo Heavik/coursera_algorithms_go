@@ -16,4 +16,5 @@ func main() {
 	gr := graphs.NewGraph(adj)
 	gr.PrintGraph()
 	fmt.Println(gr.Bfs(2))
+	fmt.Println(gr.Dfs(2))
 }

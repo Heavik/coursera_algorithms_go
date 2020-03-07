@@ -56,6 +56,26 @@ func (g graph) Bfs(start int) ([]int, error) {
 	return result, nil
 }
 
+func dfs(g graph, node int, visited map[int]bool, result []int) []int {
+	visited[node] = true
+	result = append(result, node)
+
+	for _, val := range g.vertices[node].adjList {
+		if !visited[val] {
+			result = dfs(g, val, visited, result)
+		}
+	}
+	return result
+}
+
+func (g graph) Dfs(start int) []int {
+	visited := make(map[int]bool)
+	result := []int{}
+
+	result = dfs(g, start, visited, result)
+	return result
+}
+
 func (g graph) PrintGraph() {
 	for _, node := range g.vertices {
 		nodes := []string{}
