@@ -8,9 +8,17 @@ import (
 	"strings"
 )
 
+const MAX_DISTANCE = 1000000
+
+type edge struct {
+	to     int
+	length int
+}
+
 type graphNode struct {
 	label   string
 	value   int
+	edges   map[int]*edge
 	adjList []int
 }
 
@@ -26,15 +34,23 @@ type Graph interface {
 	TopoSort() []int
 	PrintGraph()
 	ComputeScc(topNum int) (int, []int)
+	ShortestPath(start int) map[int]int
 }
 
-// NewGraph creates new graph from adj list
-func NewGraph(adj [][]int) Graph {
+// NewGraph creates new graph from adj and length lists
+func NewGraph(adj [][]int, lengths [][]int) Graph {
 	gr := graph{vertices: make(map[int]*graphNode)}
-	for _, nodes := range adj {
+	for index, nodes := range adj {
 		node := graphNode{label: strconv.Itoa(nodes[0]), value: nodes[0]}
+		if lengths != nil {
+			node.edges = make(map[int]*edge)
+		}
 		for i := 1; i < len(nodes); i++ {
 			node.adjList = append(node.adjList, nodes[i])
+			if lengths != nil {
+				edge := edge{to: nodes[i], length: lengths[index][i]}
+				node.edges[nodes[i]] = &edge
+			}
 		}
 		gr.vertices[nodes[0]] = &node
 		gr.vertexNum++
@@ -181,6 +197,40 @@ func (g *graph) ComputeScc(topNum int) (int, []int) {
 	return numScc, topScc[:topNum]
 }
 
+func getMinLenVert(g *graph, dist map[int]int, processed map[int]bool) (int, int) {
+	minLength := MAX_DISTANCE
+	minVertex := -1
+	for _, node := range g.vertices {
+		if processed[node.value] {
+			for to, edge := range node.edges {
+				if !processed[to] && minLength > dist[node.value]+edge.length {
+					minLength = dist[node.value] + edge.length
+					minVertex = edge.to
+				}
+			}
+		}
+	}
+	return minVertex, minLength
+}
+
+// problem answer is 2599,2610,2947,2052,2367,2399,2029,2442,2505,3068
+func (g *graph) ShortestPath(start int) map[int]int {
+	dist := make(map[int]int)
+	processed := make(map[int]bool)
+
+	for _, node := range g.vertices {
+		dist[node.value] = MAX_DISTANCE
+	}
+	dist[start] = 0
+	processed[start] = true
+	for vert, length := getMinLenVert(g, dist, processed); vert != -1; {
+		processed[vert] = true
+		dist[vert] = length
+		vert, length = getMinLenVert(g, dist, processed)
+	}
+	return dist
+}
+
 func (g *graph) PrintGraph() {
 	for _, node := range g.vertices {
 		nodes := []string{}
@@ -188,5 +238,8 @@ func (g *graph) PrintGraph() {
 			nodes = append(nodes, g.vertices[n].label)
 		}
 		fmt.Println(node.label, "is connected to [", strings.Join(nodes, ","), "]")
+		for _, edge := range node.edges {
+			fmt.Println("Length from", node.label, "to", edge.to, "is", edge.length)
+		}
 	}
 }
