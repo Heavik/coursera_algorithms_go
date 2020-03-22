@@ -14,5 +14,4 @@ func main() {
 		fmt.Print(paths[val], ",")
 	}
 	fmt.Println()
-
 }
