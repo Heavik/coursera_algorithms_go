@@ -116,3 +116,24 @@ func readWeightedGraphFromFile(fileName string, delim string) graphs.Graph {
 
 	return graphs.NewGraph(adj, lengths)
 }
+
+func readNumbersFromFile(fileName string) []int {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+
+	arr := []int{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		arr = append(arr, line)
+	}
+	return arr
+}

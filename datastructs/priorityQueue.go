@@ -6,6 +6,7 @@ type compare func(int, int) int
 type PriorityQueue interface {
 	Peek() int
 	Size() int
+	IsEmpty() bool
 	Enqueue(value int)
 	Dequeue() int
 }
@@ -36,6 +37,38 @@ func NewSizedPQ(comparator compare, size int) PriorityQueue {
 	return &heap{elements: make([]int, size), compare: comparator, size: size}
 }
 
+// FindMedian finds median mod len(arr) in array using two heaps (assigment answer is 1213)
+func FindMedian(arr []int) int {
+	h1 := NewMaxPQ()
+	h2 := NewMinPQ()
+
+	result := 0
+	i := 0
+	for _, val := range arr {
+		i++
+		if h1.IsEmpty() || val < h1.Peek() {
+			h1.Enqueue(val)
+		} else if h2.IsEmpty() || val > h2.Peek() {
+			h2.Enqueue(val)
+		} else {
+			h1.Enqueue(val)
+		}
+		if i%2 == 0 {
+			if h1.Size()-h2.Size() >= 2 {
+				h2.Enqueue(h1.Dequeue())
+			} else if h2.Size()-h1.Size() >= 2 {
+				h1.Enqueue(h2.Dequeue())
+			}
+		}
+		if h1.Size() == h2.Size() || h1.Size() > h2.Size() {
+			result += h1.Peek()
+		} else {
+			result += h2.Peek()
+		}
+	}
+	return result % len(arr)
+}
+
 func parent(i int) int {
 	return (i - 1) / 2
 }
@@ -49,11 +82,18 @@ func right(i int) int {
 }
 
 func (h *heap) Peek() int {
+	if h.IsEmpty() {
+		return 0
+	}
 	return h.elements[0]
 }
 
 func (h *heap) Size() int {
 	return h.size
+}
+
+func (h *heap) IsEmpty() bool {
+	return h.size == 0
 }
 
 func (h *heap) Enqueue(value int) {
