@@ -137,3 +137,36 @@ func readNumbersFromFile(fileName string) []int {
 	}
 	return arr
 }
+
+func readJobsFromFile(fileName string) []job {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+
+	jobs := []job{}
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	_, err = strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), " ")
+		weight, err := strconv.Atoi(line[0])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		length, err := strconv.Atoi(line[1])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		jobs = append(jobs, job{weight: weight, length: length})
+	}
+	return jobs
+}
