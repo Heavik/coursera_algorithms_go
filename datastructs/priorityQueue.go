@@ -7,7 +7,7 @@ type PriorityQueue interface {
 	Peek() interface{}
 	Size() int
 	IsEmpty() bool
-	Enqueue(value interface{})
+	Enqueue(value interface{}) int
 	Dequeue() interface{}
 }
 
@@ -96,7 +96,7 @@ func (h *heap) IsEmpty() bool {
 	return h.size == 0
 }
 
-func (h *heap) Enqueue(value interface{}) {
+func (h *heap) Enqueue(value interface{}) int {
 	if h.size < len(h.elements) {
 		h.elements[h.size] = value
 	} else {
@@ -108,6 +108,7 @@ func (h *heap) Enqueue(value interface{}) {
 		h.elements[parent(index)], h.elements[index] = h.elements[index], h.elements[parent(index)]
 		index = parent(index)
 	}
+	return index
 }
 
 func (h *heap) Dequeue() interface{} {
