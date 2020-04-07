@@ -10,7 +10,7 @@ func TestMinPriorityQueue(t *testing.T) {
 		pq.Enqueue(val)
 	}
 	for _, val := range expect {
-		min := pq.Dequeue()
+		min := pq.Dequeue().(int)
 		if min != val {
 			t.Errorf("Expected %v, but got %v", val, min)
 		}
@@ -25,7 +25,7 @@ func TestMinPqWithDuplicates(t *testing.T) {
 		pq.Enqueue(val)
 	}
 	for _, val := range expect {
-		min := pq.Dequeue()
+		min := pq.Dequeue().(int)
 		if min != val {
 			t.Errorf("Expected %v, but got %v", val, min)
 		}
@@ -38,7 +38,7 @@ func TestMinPriorityQueuePeek(t *testing.T) {
 	for _, val := range vals {
 		pq.Enqueue(val)
 	}
-	if pq.Peek() != 0 {
+	if pq.Peek().(int) != 0 {
 		t.Errorf("Expected %v, but got %v", 0, pq.Peek())
 	}
 }
@@ -49,7 +49,7 @@ func TestMaxPriorityQueuePeek(t *testing.T) {
 	for _, val := range vals {
 		pq.Enqueue(val)
 	}
-	if pq.Peek() != 78 {
+	if pq.Peek().(int) != 78 {
 		t.Errorf("Expected %v, but got %v", 0, pq.Peek())
 	}
 }
@@ -62,7 +62,7 @@ func TestMaxPriorityQueue(t *testing.T) {
 		pq.Enqueue(val)
 	}
 	for _, val := range expect {
-		min := pq.Dequeue()
+		min := pq.Dequeue().(int)
 		if min != val {
 			t.Errorf("Expected %v, but got %v", val, min)
 		}
@@ -82,7 +82,7 @@ func TestMinPqEnqueueDequeueSequence(t *testing.T) {
 	pq.Enqueue(12)
 	min = pq.Dequeue()
 	min = pq.Dequeue()
-	if min != 3 {
+	if min.(int) != 3 {
 		t.Errorf("Expected %v, but got %v", 3, min)
 	}
 }
@@ -100,7 +100,7 @@ func TestMaxPqEnqueueDequeueSequence(t *testing.T) {
 	pq.Enqueue(12)
 	min = pq.Dequeue()
 	min = pq.Dequeue()
-	if min != 12 {
+	if min.(int) != 12 {
 		t.Errorf("Expected %v, but got %v", 12, min)
 	}
 }

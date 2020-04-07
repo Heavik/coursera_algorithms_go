@@ -1,19 +1,19 @@
 package datastructs
 
-type compare func(int, int) int
+type compare func(interface{}, interface{}) int
 
 // PriorityQueue interface
 type PriorityQueue interface {
-	Peek() int
+	Peek() interface{}
 	Size() int
 	IsEmpty() bool
-	Enqueue(value int)
-	Dequeue() int
+	Enqueue(value interface{})
+	Dequeue() interface{}
 }
 
 type heap struct {
 	size     int
-	elements []int
+	elements []interface{}
 	compare  compare
 }
 
@@ -24,17 +24,17 @@ func NewPQ(comparator compare) PriorityQueue {
 
 // NewMinPQ creates new min priority queue with init size = 0
 func NewMinPQ() PriorityQueue {
-	return NewPQ(func(a, b int) int { return a - b })
+	return NewPQ(func(a, b interface{}) int { return a.(int) - b.(int) })
 }
 
 // NewMaxPQ creates new max priority queue with init size = 0
 func NewMaxPQ() PriorityQueue {
-	return NewPQ(func(a, b int) int { return b - a })
+	return NewPQ(func(a, b interface{}) int { return b.(int) - a.(int) })
 }
 
 // NewSizedPQ creates new priority queue with given size and comparator
 func NewSizedPQ(comparator compare, size int) PriorityQueue {
-	return &heap{elements: make([]int, size), compare: comparator, size: size}
+	return &heap{elements: make([]interface{}, size), compare: comparator, size: size}
 }
 
 // FindMedian finds median mod len(arr) in array using two heaps (assigment answer is 1213)
@@ -46,9 +46,9 @@ func FindMedian(arr []int) int {
 	i := 0
 	for _, val := range arr {
 		i++
-		if h1.IsEmpty() || val < h1.Peek() {
+		if h1.IsEmpty() || val < h1.Peek().(int) {
 			h1.Enqueue(val)
-		} else if h2.IsEmpty() || val > h2.Peek() {
+		} else if h2.IsEmpty() || val > h2.Peek().(int) {
 			h2.Enqueue(val)
 		} else {
 			h1.Enqueue(val)
@@ -61,9 +61,9 @@ func FindMedian(arr []int) int {
 			}
 		}
 		if h1.Size() == h2.Size() || h1.Size() > h2.Size() {
-			result += h1.Peek()
+			result += h1.Peek().(int)
 		} else {
-			result += h2.Peek()
+			result += h2.Peek().(int)
 		}
 	}
 	return result % len(arr)
@@ -81,7 +81,7 @@ func right(i int) int {
 	return 2*i + 2
 }
 
-func (h *heap) Peek() int {
+func (h *heap) Peek() interface{} {
 	if h.IsEmpty() {
 		return 0
 	}
@@ -96,7 +96,7 @@ func (h *heap) IsEmpty() bool {
 	return h.size == 0
 }
 
-func (h *heap) Enqueue(value int) {
+func (h *heap) Enqueue(value interface{}) {
 	if h.size < len(h.elements) {
 		h.elements[h.size] = value
 	} else {
@@ -110,7 +110,7 @@ func (h *heap) Enqueue(value int) {
 	}
 }
 
-func (h *heap) Dequeue() int {
+func (h *heap) Dequeue() interface{} {
 	result := h.elements[0]
 	h.elements[0], h.elements[h.size-1] = h.elements[h.size-1], h.elements[0]
 	h.size--
