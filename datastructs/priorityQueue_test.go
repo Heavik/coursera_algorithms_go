@@ -104,3 +104,29 @@ func TestMaxPqEnqueueDequeueSequence(t *testing.T) {
 		t.Errorf("Expected %v, but got %v", 12, min)
 	}
 }
+
+func TestPqRemoval(t *testing.T) {
+	pq := NewMinPQ()
+	vals := []int{2, 4, 13, 1, 7, 3}
+	for _, val := range vals {
+		pq.Enqueue(val)
+	}
+	pq.Remove(4)
+	pq.Remove(13)
+	pq.Remove(7)
+	min := pq.Dequeue().(int)
+	if min != 1 {
+		t.Errorf("Expected %v, but got %v", 1, min)
+	}
+	min = pq.Dequeue().(int)
+	if min != 2 {
+		t.Errorf("Expected %v, but got %v", 2, min)
+	}
+	min = pq.Dequeue().(int)
+	if min != 3 {
+		t.Errorf("Expected %v, but got %v", 3, min)
+	}
+	if !pq.IsEmpty() {
+		t.Error("queue must be empty")
+	}
+}

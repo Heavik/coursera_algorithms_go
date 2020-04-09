@@ -2,19 +2,26 @@ package datastructs
 
 type compare func(interface{}, interface{}) int
 
+// IntVal interface for custom types that need to be stored in PriorityQueue
+type IntVal interface {
+	GetVal() int
+}
+
 // PriorityQueue interface
 type PriorityQueue interface {
 	Peek() interface{}
 	Size() int
 	IsEmpty() bool
-	Enqueue(value interface{}) int
+	Enqueue(value interface{})
 	Dequeue() interface{}
+	Remove(item interface{}) interface{}
 }
 
 type heap struct {
 	size     int
 	elements []interface{}
 	compare  compare
+	indexMap map[int]int
 }
 
 // NewPQ creates new priority queue with init size = 0
@@ -34,7 +41,11 @@ func NewMaxPQ() PriorityQueue {
 
 // NewSizedPQ creates new priority queue with given size and comparator
 func NewSizedPQ(comparator compare, size int) PriorityQueue {
-	return &heap{elements: make([]interface{}, size), compare: comparator, size: size}
+	return &heap{
+		elements: make([]interface{}, size),
+		compare:  comparator,
+		size:     size, indexMap: make(map[int]int),
+	}
 }
 
 // FindMedian finds median mod len(arr) in array using two heaps (assigment answer is 1213)
@@ -81,6 +92,64 @@ func right(i int) int {
 	return 2*i + 2
 }
 
+func setIndex(h *heap, item interface{}, index int) {
+	switch t := item.(type) {
+	case IntVal:
+		h.indexMap[t.GetVal()] = index
+	case int:
+		h.indexMap[t] = index
+	default:
+		// unknown type
+	}
+}
+
+func getIndex(h *heap, item interface{}) int {
+	switch t := item.(type) {
+	case IntVal:
+		return h.indexMap[t.GetVal()]
+	case int:
+		return h.indexMap[t]
+	default:
+		// unknown type
+		return -1
+	}
+}
+
+func swapIndexes(h *heap, item1, item2 interface{}) {
+	i1 := getIndex(h, item1)
+	i2 := getIndex(h, item2)
+	setIndex(h, item2, i1)
+	setIndex(h, item1, i2)
+}
+
+func siftUp(h *heap, index int) {
+	for parent(index) >= 0 && h.compare(h.elements[parent(index)], h.elements[index]) > 0 {
+		swapIndexes(h, h.elements[parent(index)], h.elements[index])
+		h.elements[parent(index)], h.elements[index] = h.elements[index], h.elements[parent(index)]
+		index = parent(index)
+	}
+}
+
+func siftDown(h *heap, i int) bool {
+	iStart := i
+	for {
+		j := i
+		if left(i) < h.size && h.compare(h.elements[left(i)], h.elements[j]) < 0 {
+			j = left(i)
+		}
+		if right(i) < h.size && h.compare(h.elements[right(i)], h.elements[j]) < 0 {
+			j = right(i)
+		}
+		if i == j {
+			break
+		}
+		swapIndexes(h, h.elements[i], h.elements[j])
+		h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
+		i = j
+	}
+	return i > iStart
+}
+
 func (h *heap) Peek() interface{} {
 	if h.IsEmpty() {
 		return 0
@@ -96,39 +165,38 @@ func (h *heap) IsEmpty() bool {
 	return h.size == 0
 }
 
-func (h *heap) Enqueue(value interface{}) int {
+func (h *heap) Enqueue(value interface{}) {
 	if h.size < len(h.elements) {
 		h.elements[h.size] = value
 	} else {
 		h.elements = append(h.elements, value)
 	}
 	h.size++
-	index := h.size - 1
-	for parent(index) >= 0 && h.compare(h.elements[parent(index)], h.elements[index]) > 0 {
-		h.elements[parent(index)], h.elements[index] = h.elements[index], h.elements[parent(index)]
-		index = parent(index)
-	}
-	return index
+	setIndex(h, value, h.size-1)
+	siftUp(h, h.size-1)
 }
 
 func (h *heap) Dequeue() interface{} {
 	result := h.elements[0]
+	swapIndexes(h, h.elements[0], h.elements[h.size-1])
 	h.elements[0], h.elements[h.size-1] = h.elements[h.size-1], h.elements[0]
 	h.size--
-	i := 0
-	for {
-		j := i
-		if left(i) < h.size && h.compare(h.elements[left(i)], h.elements[j]) < 0 {
-			j = left(i)
-		}
-		if right(i) < h.size && h.compare(h.elements[right(i)], h.elements[j]) < 0 {
-			j = right(i)
-		}
-		if i == j {
-			break
-		}
-		h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
-		i = j
+	siftDown(h, 0)
+	return result
+}
+
+func (h *heap) Remove(item interface{}) interface{} {
+	index := getIndex(h, item)
+	result := h.elements[index]
+	if index == h.size-1 {
+		h.size--
+		return result
+	}
+	swapIndexes(h, h.elements[index], h.elements[h.size-1])
+	h.elements[index], h.elements[h.size-1] = h.elements[h.size-1], h.elements[index]
+	h.size--
+	if !siftDown(h, index) {
+		siftUp(h, index)
 	}
 	return result
 }
