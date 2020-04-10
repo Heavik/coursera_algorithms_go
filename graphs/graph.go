@@ -20,6 +20,7 @@ type graphNode struct {
 	value   int
 	edges   map[int]*edge
 	adjList []int
+	key     int
 }
 
 type graph struct {
@@ -35,6 +36,7 @@ type Graph interface {
 	PrintGraph()
 	ComputeScc(topNum int) (int, []int)
 	ShortestPath(start int) map[int]int
+	PrimMst() int
 }
 
 // NewGraph creates new graph from adj and length lists
@@ -56,6 +58,10 @@ func NewGraph(adj [][]int, lengths [][]int) Graph {
 		gr.vertexNum++
 	}
 	return &gr
+}
+
+func (node *graphNode) GetVal() int {
+	return node.value
 }
 
 func (g *graph) Bfs(start int) ([]int, error) {
@@ -229,6 +235,52 @@ func (g *graph) ShortestPath(start int) map[int]int {
 		vert, length = getMinLenVert(g, dist, processed)
 	}
 	return dist
+}
+
+// problem answer is -3612829
+func (g *graph) PrimMst() int {
+	pq := datastructs.NewPQ(func(a, b interface{}) int {
+		return a.(*graphNode).key - b.(*graphNode).key
+	})
+	startVertex := 1
+	processed := make(map[int]bool)
+	winner := make(map[int]*edge)
+	result := make([]*edge, 0)
+	for _, vertex := range g.vertices {
+		if edge, ok := vertex.edges[startVertex]; ok {
+			vertex.key = edge.length
+			winner[vertex.value] = edge
+		} else {
+			vertex.key = MAX_DISTANCE
+			winner[vertex.value] = nil
+		}
+		pq.Enqueue(vertex)
+	}
+	processed[startVertex] = true
+
+	for !pq.IsEmpty() {
+		minVertex := pq.Dequeue().(*graphNode)
+		processed[minVertex.value] = true
+		result = append(result, winner[minVertex.value])
+
+		for _, edge := range minVertex.edges {
+			if _, ok := processed[edge.to]; !ok {
+				if edge.length < g.vertices[edge.to].key {
+					pq.Remove(g.vertices[edge.to])
+					g.vertices[edge.to].key = edge.length
+					winner[edge.to] = edge
+					pq.Enqueue(g.vertices[edge.to])
+				}
+			}
+		}
+	}
+	lengthSum := 0
+	for _, edge := range result {
+		if edge != nil {
+			lengthSum += edge.length
+		}
+	}
+	return lengthSum
 }
 
 func (g *graph) PrintGraph() {

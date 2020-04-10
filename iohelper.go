@@ -117,6 +117,66 @@ func readWeightedGraphFromFile(fileName string, delim string) graphs.Graph {
 	return graphs.NewGraph(adj, lengths)
 }
 
+func readPrimMstGraphFromFile(fileName string) graphs.Graph {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	adj := [][]int{}
+	lengths := [][]int{}
+	adjIndex := -1
+	lengthsIndex := -1
+	adjIndexMap := make(map[int]int)
+	lengthsIndexMap := make(map[int]int)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), " ")
+		sourceNode, err := strconv.Atoi(line[0])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		if _, ok := adjIndexMap[sourceNode]; !ok {
+			adj = append(adj, []int{sourceNode})
+			adjIndex++
+			adjIndexMap[sourceNode] = adjIndex
+		}
+		destNode, err := strconv.Atoi(line[1])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		adj[adjIndexMap[sourceNode]] = append(adj[adjIndexMap[sourceNode]], destNode)
+		if _, ok := adjIndexMap[destNode]; !ok {
+			adj = append(adj, []int{destNode})
+			adjIndex++
+			adjIndexMap[destNode] = adjIndex
+		}
+		adj[adjIndexMap[destNode]] = append(adj[adjIndexMap[destNode]], sourceNode)
+		length, err := strconv.Atoi(line[2])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		if _, ok := lengthsIndexMap[sourceNode]; !ok {
+			lengths = append(lengths, []int{sourceNode})
+			lengthsIndex++
+			lengthsIndexMap[sourceNode] = lengthsIndex
+		}
+		lengths[lengthsIndexMap[sourceNode]] = append(lengths[lengthsIndexMap[sourceNode]], length)
+		if _, ok := lengthsIndexMap[destNode]; !ok {
+			lengths = append(lengths, []int{destNode})
+			lengthsIndex++
+			lengthsIndexMap[destNode] = lengthsIndex
+		}
+		lengths[lengthsIndexMap[destNode]] = append(lengths[lengthsIndexMap[destNode]], length)
+	}
+
+	return graphs.NewGraph(adj, lengths)
+}
+
 func readNumbersFromFile(fileName string) []int {
 	file, err := os.Open(fileName)
 	if err != nil {
