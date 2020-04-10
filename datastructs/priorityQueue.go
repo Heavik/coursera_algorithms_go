@@ -44,7 +44,8 @@ func NewSizedPQ(comparator compare, size int) PriorityQueue {
 	return &heap{
 		elements: make([]interface{}, size),
 		compare:  comparator,
-		size:     size, indexMap: make(map[int]int),
+		size:     size,
+		indexMap: make(map[int]int),
 	}
 }
 

@@ -1,6 +1,8 @@
 package datastructs
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMinPriorityQueue(t *testing.T) {
 	pq := NewMinPQ()
@@ -108,23 +110,18 @@ func TestMaxPqEnqueueDequeueSequence(t *testing.T) {
 func TestPqRemoval(t *testing.T) {
 	pq := NewMinPQ()
 	vals := []int{2, 4, 13, 1, 7, 3}
+	expect := []int{1, 2, 3}
 	for _, val := range vals {
 		pq.Enqueue(val)
 	}
 	pq.Remove(4)
 	pq.Remove(13)
 	pq.Remove(7)
-	min := pq.Dequeue().(int)
-	if min != 1 {
-		t.Errorf("Expected %v, but got %v", 1, min)
-	}
-	min = pq.Dequeue().(int)
-	if min != 2 {
-		t.Errorf("Expected %v, but got %v", 2, min)
-	}
-	min = pq.Dequeue().(int)
-	if min != 3 {
-		t.Errorf("Expected %v, but got %v", 3, min)
+	for _, val := range expect {
+		min := pq.Dequeue().(int)
+		if min != val {
+			t.Errorf("Expected %v, but got %v", val, min)
+		}
 	}
 	if !pq.IsEmpty() {
 		t.Error("queue must be empty")
