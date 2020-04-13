@@ -230,3 +230,35 @@ func readJobsFromFile(fileName string) []job {
 	}
 	return jobs
 }
+
+func readPointPairsFromFile(fileName string) []*pair {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+	pairs := []*pair{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), " ")
+		from, err := strconv.Atoi(line[0])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		to, err := strconv.Atoi(line[1])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		weight, err := strconv.Atoi(line[2])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		p := pair{from: from, to: to, weight: weight}
+		pairs = append(pairs, &p)
+	}
+	return pairs
+}

@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 func main() {
-	graph := readPrimMstGraphFromFile("prim_mst.txt")
-	mstSum := graph.PrimMst()
-	fmt.Println(mstSum)
+	pairs := readPointPairsFromFile("clustering1.txt")
+	fmt.Println(singleLink(pairs, 500, 4))
 }
