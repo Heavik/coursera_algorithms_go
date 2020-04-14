@@ -3,6 +3,6 @@ package main
 import "fmt"
 
 func main() {
-	pairs := readPointPairsFromFile("clustering1.txt")
-	fmt.Println(singleLink(pairs, 500, 4))
+	numbers := readBinaryPointsFromFile("clustering_big.txt")
+	fmt.Println(clusteringBig(numbers, 24))
 }

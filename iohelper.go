@@ -262,3 +262,24 @@ func readPointPairsFromFile(fileName string) []*pair {
 	}
 	return pairs
 }
+
+func readBinaryPointsFromFile(fileName string) []int64 {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+	result := []int64{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.Join(strings.Fields(scanner.Text()), "")
+		number, err := strconv.ParseInt(line, 2, 32)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		result = append(result, number)
+	}
+	return result
+}
