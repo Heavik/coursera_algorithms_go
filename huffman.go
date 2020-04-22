@@ -40,20 +40,6 @@ func getDepth(tree *node) (int, int) {
 	min := math.MaxInt32
 	max := math.MinInt32
 
-	getMin := func(a, b int) int {
-		if a < b {
-			return a
-		}
-		return b
-	}
-
-	getMax := func(a, b int) int {
-		if a > b {
-			return a
-		}
-		return b
-	}
-
 	var getDepthRec func(node *node, depth int)
 	getDepthRec = func(node *node, depth int) {
 		if node.isLeaf() {
