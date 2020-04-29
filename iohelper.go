@@ -283,3 +283,29 @@ func readBinaryPointsFromFile(fileName string) []int64 {
 	}
 	return result
 }
+
+func readKnapsackFromFile(fileName string) *knapsack {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+	k := knapsack{
+		values:  []int{},
+		weights: []int{},
+	}
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	line := strings.Split(scanner.Text(), " ")
+	k.capacity, _ = strconv.Atoi(line[0])
+	k.items, _ = strconv.Atoi(line[1])
+	for scanner.Scan() {
+		line = strings.Split(scanner.Text(), " ")
+		val, _ := strconv.Atoi(line[0])
+		wt, _ := strconv.Atoi(line[1])
+		k.values = append(k.values, val)
+		k.weights = append(k.weights, wt)
+	}
+	return &k
+}
