@@ -2,6 +2,7 @@ package main
 
 import (
 	"coursera_algorithms/datastructs"
+	"coursera_algorithms/utils"
 	"math"
 )
 
@@ -43,8 +44,8 @@ func getDepth(tree *node) (int, int) {
 	var getDepthRec func(node *node, depth int)
 	getDepthRec = func(node *node, depth int) {
 		if node.isLeaf() {
-			min = getMin(depth, min)
-			max = getMax(depth, max)
+			min = utils.GetMax(depth, min)
+			max = utils.GetMax(depth, max)
 		} else {
 			if node.left != nil {
 				getDepthRec(node.left, depth+1)

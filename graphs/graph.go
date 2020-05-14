@@ -2,6 +2,7 @@ package graphs
 
 import (
 	"coursera_algorithms/datastructs"
+	"coursera_algorithms/utils"
 	"fmt"
 	"sort"
 	"strconv"
@@ -37,6 +38,7 @@ type Graph interface {
 	ComputeScc(topNum int) (int, []int)
 	ShortestPath(start int) map[int]int
 	PrimMst() int
+	ShortestAllPairs() int
 }
 
 // NewGraph creates new graph from adj and length lists
@@ -281,6 +283,55 @@ func (g *graph) PrimMst() int {
 		}
 	}
 	return lengthSum
+}
+
+// problem answer is -19
+func (g *graph) ShortestAllPairs() int {
+	dist := make([][]int, g.vertexNum)
+	for i := range dist {
+		dist[i] = make([]int, g.vertexNum)
+	}
+
+	for i := 0; i < g.vertexNum; i++ {
+		for j := 0; j < g.vertexNum; j++ {
+			dist[i][j] = MAX_DISTANCE
+		}
+	}
+
+	for _, vertex := range g.vertices {
+		dist[vertex.value-1][vertex.value-1] = 0
+		for _, edge := range vertex.edges {
+			dist[vertex.value-1][edge.to-1] = edge.length
+		}
+	}
+
+	for k := 0; k < g.vertexNum; k++ {
+		for i := 0; i < g.vertexNum; i++ {
+			for j := 0; j < g.vertexNum; j++ {
+				if dist[i][k]+dist[k][j] < dist[i][j] {
+					dist[i][j] = dist[i][k] + dist[k][j]
+				}
+			}
+		}
+	}
+
+	for i := 0; i < g.vertexNum; i++ {
+		if dist[i][i] < 0 {
+			return -MAX_DISTANCE
+		}
+	}
+
+	min := MAX_DISTANCE
+
+	for i := 0; i < g.vertexNum; i++ {
+		for j := 0; j < g.vertexNum; j++ {
+			if i != j {
+				min = utils.GetMin(min, dist[i][j])
+			}
+		}
+	}
+
+	return min
 }
 
 func (g *graph) PrintGraph() {

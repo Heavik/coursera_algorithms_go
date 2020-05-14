@@ -117,6 +117,63 @@ func readWeightedGraphFromFile(fileName string, delim string) graphs.Graph {
 	return graphs.NewGraph(adj, lengths)
 }
 
+func readWeightedGraphFromFileV2(fileName string, delim string) graphs.Graph {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	adj := [][]int{}
+	lengths := [][]int{}
+	currentNode := -1
+	notProcessed := make(map[int]bool)
+	processed := make(map[int]bool)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), delim)
+
+		sourceNode, err := strconv.Atoi(line[0])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		if _, ok := processed[sourceNode]; !ok {
+			adj = append(adj, []int{sourceNode})
+			lengths = append(lengths, []int{sourceNode})
+			currentNode++
+			processed[sourceNode] = true
+		}
+		if _, ok := notProcessed[sourceNode]; ok {
+			delete(notProcessed, sourceNode)
+		}
+
+		destNode, err := strconv.Atoi(line[1])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		adj[currentNode] = append(adj[currentNode], destNode)
+
+		length, err := strconv.Atoi(line[2])
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		lengths[currentNode] = append(lengths[currentNode], length)
+		if _, ok := processed[destNode]; !ok {
+			notProcessed[destNode] = true
+		}
+	}
+	for key := range notProcessed {
+		adj = append(adj, []int{key})
+		lengths = append(lengths, []int{key})
+	}
+
+	return graphs.NewGraph(adj, lengths)
+}
+
 func readPrimMstGraphFromFile(fileName string) graphs.Graph {
 	file, err := os.Open(fileName)
 	if err != nil {

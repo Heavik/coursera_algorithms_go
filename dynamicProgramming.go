@@ -1,5 +1,7 @@
 package main
 
+import "coursera_algorithms/utils"
+
 type knapsack struct {
 	capacity int
 	items    int
@@ -14,7 +16,7 @@ func maxWeightSet(weights []int) []int {
 	maxVals[1] = weights[0]
 
 	for i := 2; i < len(maxVals); i++ {
-		maxVals[i] = getMax(maxVals[i-1], maxVals[i-2]+weights[i-1])
+		maxVals[i] = utils.GetMax(maxVals[i-1], maxVals[i-2]+weights[i-1])
 	}
 
 	result := []int{}
@@ -47,7 +49,7 @@ func knapsackOptimal(k *knapsack) int {
 			if k.weights[i-1] > x {
 				arr[i][x] = arr[i-1][x]
 			} else {
-				arr[i][x] = getMax(arr[i-1][x], arr[i-1][x-k.weights[i-1]]+k.values[i-1])
+				arr[i][x] = utils.GetMax(arr[i-1][x], arr[i-1][x-k.weights[i-1]]+k.values[i-1])
 			}
 		}
 	}
@@ -65,7 +67,7 @@ func bigKnapsackOptimal(k *knapsack) int {
 			if k.weights[i] > x {
 				current[x] = prev[x]
 			} else {
-				current[x] = getMax(prev[x], prev[x-k.weights[i]]+k.values[i])
+				current[x] = utils.GetMax(prev[x], prev[x-k.weights[i]]+k.values[i])
 			}
 		}
 		for i, val := range current {

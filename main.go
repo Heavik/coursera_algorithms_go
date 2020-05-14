@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	k := readKnapsackFromFile("knapsack_big.txt")
-	fmt.Println(bigKnapsackOptimal(k))
+	graph := readWeightedGraphFromFileV2("g3.txt", " ")
+	fmt.Println(graph.ShortestAllPairs())
 }
