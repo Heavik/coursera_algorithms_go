@@ -1,6 +1,9 @@
 package main
 
-import "coursera_algorithms/utils"
+import (
+	"coursera_algorithms/utils"
+	"math"
+)
 
 type knapsack struct {
 	capacity int
@@ -76,4 +79,60 @@ func bigKnapsackOptimal(k *knapsack) int {
 	}
 
 	return current[k.capacity]
+}
+
+func getDistances(points [][]float64) [][]float64 {
+	dist := make([][]float64, len(points))
+	for i := range dist {
+		dist[i] = make([]float64, len(points))
+	}
+
+	for i := 0; i < len(dist); i++ {
+		for j := 0; j < len(dist[i]); j++ {
+			if i == j {
+				dist[i][j] = 0.0
+			} else {
+				dist[i][j] = math.Sqrt(math.Pow(points[i][0]-points[j][0], 2) + math.Pow(points[i][1]-points[j][1], 2))
+			}
+		}
+	}
+
+	return dist
+}
+
+//problem answer is 26442
+func tsp(dist [][]float64) float64 {
+	dp := make([][]float64, int(math.Pow(2, float64(len(dist)))))
+	for i := range dp {
+		dp[i] = make([]float64, len(dist))
+		for j := range dp[i] {
+			dp[i][j] = -1
+		}
+	}
+
+	visitedAll := (1 << len(dist)) - 1
+
+	var tspHelper func(mask int, pos int) float64
+
+	tspHelper = func(mask int, pos int) float64 {
+		if mask == visitedAll {
+			return dist[pos][0]
+		}
+		if dp[mask][pos] != -1 {
+			return dp[mask][pos]
+		}
+
+		ans := math.MaxFloat64
+
+		for city := 0; city < len(dist); city++ {
+			if (mask & (1 << city)) == 0 {
+				newAns := dist[pos][city] + tspHelper(mask|(1<<city), city)
+				ans = math.Min(ans, newAns)
+			}
+		}
+
+		dp[mask][pos] = ans
+		return dp[mask][pos]
+	}
+	return tspHelper(1, 0)
 }

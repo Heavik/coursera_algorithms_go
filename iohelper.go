@@ -366,3 +366,29 @@ func readKnapsackFromFile(fileName string) *knapsack {
 	}
 	return &k
 }
+
+func readCoordinates(fileName string) [][]float64 {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil
+	}
+	defer file.Close()
+	coords := make([][]float64, 0)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), " ")
+		x, err := strconv.ParseFloat(line[0], 64)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		y, err := strconv.ParseFloat(line[1], 64)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil
+		}
+		coords = append(coords, []float64{x, y})
+	}
+	return coords
+}
