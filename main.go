@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	coords := readCoordinates("tsp.txt")
-	dist := getDistances(coords)
-	fmt.Println(tsp(dist))
+	coords := readCoordinates("tsp_huge.txt")
+	//dist := getDistances(coords)
+	fmt.Println(tspNearestNeighbor(coords))
 }

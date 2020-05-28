@@ -81,6 +81,10 @@ func bigKnapsackOptimal(k *knapsack) int {
 	return current[k.capacity]
 }
 
+func calcDistance(x, y, z, w float64) float64 {
+	return math.Sqrt(math.Pow(x-z, 2) + math.Pow(y-w, 2))
+}
+
 func getDistances(points [][]float64) [][]float64 {
 	dist := make([][]float64, len(points))
 	for i := range dist {
@@ -92,7 +96,7 @@ func getDistances(points [][]float64) [][]float64 {
 			if i == j {
 				dist[i][j] = 0.0
 			} else {
-				dist[i][j] = math.Sqrt(math.Pow(points[i][0]-points[j][0], 2) + math.Pow(points[i][1]-points[j][1], 2))
+				dist[i][j] = calcDistance(points[i][0], points[i][1], points[j][0], points[j][1])
 			}
 		}
 	}
@@ -135,4 +139,35 @@ func tsp(dist [][]float64) float64 {
 		return dp[mask][pos]
 	}
 	return tspHelper(1, 0)
+}
+
+// problem answer is 1203406
+func tspNearestNeighbor(coords [][]float64) float64 {
+	result := 0.0
+	lastVisited := 0
+
+	visited := make(map[int]bool, len(coords))
+	visited[lastVisited] = true
+
+	for i := 0; i < len(coords)-1; i++ {
+		minDist := math.MaxFloat64
+		nextCity := -1
+		for j := 0; j < len(coords); j++ {
+			if !visited[j] {
+				dist := calcDistance(coords[lastVisited][0], coords[lastVisited][1], coords[j][0], coords[j][1])
+				if dist < minDist {
+					minDist = dist
+					nextCity = j
+				}
+			}
+		}
+		if nextCity != -1 {
+			result += minDist
+			visited[nextCity] = true
+			lastVisited = nextCity
+		}
+	}
+
+	result += calcDistance(coords[lastVisited][0], coords[lastVisited][1], coords[0][0], coords[0][1])
+	return result
 }
