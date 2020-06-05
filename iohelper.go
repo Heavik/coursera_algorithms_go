@@ -392,3 +392,33 @@ func readCoordinates(fileName string) [][]float64 {
 	}
 	return coords
 }
+
+func readTwoSat(fileName string) ([]int, []int) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return nil, nil
+	}
+	defer file.Close()
+	a := make([]int, 0)
+	b := make([]int, 0)
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), " ")
+		x, err := strconv.ParseInt(line[0], 0, 32)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil, nil
+		}
+		y, err := strconv.ParseInt(line[1], 0, 32)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return nil, nil
+		}
+		a = append(a, int(x))
+		b = append(b, int(y))
+	}
+
+	return a, b
+}

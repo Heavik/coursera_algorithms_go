@@ -5,7 +5,6 @@ import (
 )
 
 func main() {
-	coords := readCoordinates("tsp_huge.txt")
-	//dist := getDistances(coords)
-	fmt.Println(tspNearestNeighbor(coords))
+	a, b := readTwoSat("2sat_1.txt")
+	fmt.Println(isTwoSatSatisfy(a, b))
 }
